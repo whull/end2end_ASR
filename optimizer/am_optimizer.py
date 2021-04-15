@@ -40,8 +40,6 @@ class SummaryAndOptimizer(object):
         return tuple_op
 
 
-
-
 def decay_lr(warmup_steps, global_step):
     """
     warmup和学习率衰减
