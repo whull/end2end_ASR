@@ -31,7 +31,7 @@ config.gpu_options.visible_device_list = str(hvd.local_rank()) if use_hvd else "
 
 def main():
     hp = hyperparameters.LASLSTMHyperparams()
-    hp.log_iterval = 1
+    hp.log_iterval = 50
     hp.checkpoint_interval = 500  # 保存模型的频率
     hp.bos, hp.eos = 1, 2
     hp.vocab_file = r"dict/syllables.txt"
