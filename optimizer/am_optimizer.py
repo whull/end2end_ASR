@@ -34,7 +34,7 @@ class SummaryAndOptimizer(object):
             scalar.append(v)
         summary = tf.summary.merge_all()
 
-        tuple_op = tf.tuple([global_step, loss, learning_rate, summary, train_opt].extend(scalar),
+        tuple_op = tf.tuple([global_step, loss, learning_rate, summary],
                             control_inputs=[train_opt])
 
         return tuple_op

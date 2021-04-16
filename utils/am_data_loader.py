@@ -13,17 +13,6 @@ import numpy as np
 import tensorflow as tf
 
 
-def load_vocabulary(path):
-    file = os.path.join(path)
-    fp = open(file, encoding="utf-8")
-    lines = fp.readlines()
-    fp.close()
-    lines = [l.strip().split(",")[-1] for l in lines]
-    phone2id = {char: i for i, char in enumerate(lines)}
-    id2phone = {i: char for i, char in enumerate(lines)}
-    return phone2id, id2phone
-
-
 class LoadTrainDataMask(object):
     def __init__(self, tfrecord_file, hp, ID):
         self.tfrecord_file = np.random.permutation(tfrecord_file)
@@ -40,9 +29,9 @@ class LoadTrainDataMask(object):
         print("Mapped!")
         dataset = dataset.padded_batch(batch_size=self.hp.batch_size,
                                        padded_shapes={"mel": [None, self.hp.n_mels*self.hp.r],
-                                                      "melshape": [None],
+                                                      "mel_shape": [None],
                                                       "label": [None],
-                                                      "mellength": [None]
+                                                      "mel_length": [None]
                                                       })
         print("Batch padded!")
         dataset = dataset.prefetch(buffer_size=2)
@@ -60,7 +49,7 @@ class LoadTrainDataMask(object):
             "mel": tf.VarLenFeature(dtype=tf.float32),
             # FixedLenFeature是按照键值对将features映射到大小为[serilized.size(),df.shape]的矩阵，
             # 这里的FixLenFeature指的是每个键值对应的feature的size是一样的
-            "melshape": tf.FixedLenFeature(shape=(2,), dtype=tf.int64),
+            "mel_shape": tf.FixedLenFeature(shape=(2,), dtype=tf.int64),
             "label": tf.VarLenFeature(dtype=tf.int64)
         }
 
@@ -70,16 +59,16 @@ class LoadTrainDataMask(object):
         parsed_example["mel"] = tf.sparse_tensor_to_dense(parsed_example["mel"])
         parsed_example["label"] = tf.sparse_tensor_to_dense(parsed_example["label"])
         # reshape
-        parsed_example["mel"] = tf.reshape(parsed_example["mel"], parsed_example["melshape"])
-        pad_size = -parsed_example["melshape"][0] % 3
+        parsed_example["mel"] = tf.reshape(parsed_example["mel"], parsed_example["mel_shape"])
+        pad_size = -parsed_example["mel_shape"][0] % 3
         parsed_example["mel"] = tf.pad(parsed_example["mel"],
                                        tf.convert_to_tensor([[0, pad_size], [0, 0]]), "CONSTANT")
         parsed_example["mel"] = tf.reshape(parsed_example["mel"], [-1, self.hp.n_mels*self.hp.r])
-        parsed_example["mellength"] = tf.to_int32(tf.not_equal(
+        parsed_example["mel_length"] = tf.to_int32(tf.not_equal(
             tf.count_nonzero(parsed_example["mel"], axis=1, dtype=tf.int32), 0))
         # transform dtype
         parsed_example["mel"] = tf.cast(parsed_example["mel"], dtype=tf.float32)
-        parsed_example["pinyin"] = tf.cast(parsed_example["pinyin"], dtype=tf.int32)
+        parsed_example["label"] = tf.cast(parsed_example["label"], dtype=tf.int32)
 
         if self.hp.use_spec_augment:
             threshold = tf.constant(0.5, dtype=tf.float32)

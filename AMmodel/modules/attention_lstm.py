@@ -21,9 +21,9 @@ def local_attention_lstm(units, input, is_training):
     lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(units)
     lstm_cell_drop = tf.contrib.rnn.DropoutWrapper(cell=lstm_cell,
                                                    output_keep_prob=0.5 if is_training else 1)
-    cell_with_attetion = tf.contrib.seq2seq.AttentionWrapper(lstm_cell_drop,
-                                                             attention_mechanism,
-                                                             units)
+    cell_with_attetion = attention_wrapper.AttentionWrapper(lstm_cell_drop,
+                                                            attention_mechanism,
+                                                            units)
     return cell_with_attetion
 
 
@@ -105,4 +105,4 @@ class DecoderLSTM(object):
             decoder_outputs, final_state, _ = tf.contrib.seq2seq.dynamic_decode(decoder=inference_decoder,
                                                                                 maximum_iterations=30)
 
-            return decoder_outputs
+        return decoder_outputs

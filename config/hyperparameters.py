@@ -36,11 +36,17 @@ class LASLSTMHyperparams(AudioHP):
     is_beam_search = True
     beam_size = 5
 
+    use_spec_augment = True
+    n_freq_mask = 2
+    n_time_mask = 2
+    width_freq_mask = 15
+    # an upper bound on the time mask so that a time mask cannot be wider than p times the number of time steps
+    p = 0.1
     # training scheme
     lr = 1
     warm_up = 8000
-    logdir = "logdir/20191030"
-    batch_size = 100  # 200
+    logdir = "logdir"
+    batch_size = 10  # 200
 
     num_epochs = 200
 
