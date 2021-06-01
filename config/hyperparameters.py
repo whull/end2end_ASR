@@ -27,12 +27,12 @@ class LASLSTMHyperparams(AudioHP):
     num_encode_layer = 3
     encode_num_units = 512
     cell_type = 'on_lstm'  # 默认basic_lstm, 可选[on_lstm, basic_lstm]
-    num_levels = 4  # lstm_type='on_lstm'时使用，能被encod_num_units整除
+    num_levels = 4  # lstm_type='on_lstm'时使用，能被encode_num_units整除
     bi_direction = True
 
     # decode
     embed_size = 100  # alias = E
-    decode_num_units = 1024  # bi_direction=Ture时，encode_num_units * 2
+    decode_num_units = 1024  # bi_direction=True时，encode_num_units * 2
     is_beam_search = True
     beam_size = 5
 
